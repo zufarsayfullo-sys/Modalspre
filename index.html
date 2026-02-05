@@ -1,0 +1,543 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Quiz - Will/Won't/Might/Might Not</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .timer {
+            text-align: center;
+            font-size: 1.5em;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 30px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+        }
+
+        .progress-bar-correct {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .progress-bar-incorrect {
+            height: 100%;
+            background: linear-gradient(90deg, #c0392b, #e74c3c);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c3e50;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+
+        .option:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .option.correct {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .option.incorrect {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            text-align: center;
+            display: none;
+        }
+
+        .results h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .score {
+            font-size: 3em;
+            color: #27ae60;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .score.fail {
+            color: #e74c3c;
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-screen p {
+            font-size: 1.2em;
+            margin: 20px 0;
+            color: #555;
+        }
+
+        .start-button {
+            font-size: 1.3em;
+            padding: 15px 50px;
+            margin-top: 20px;
+        }
+
+        .quiz-content {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Grammar Quiz: Will/Won't/Might/Might Not</h1>
+        
+        <div class="start-screen" id="startScreen">
+            <p>Test your knowledge of modal verbs!</p>
+            <p>📝 10 questions per attempt</p>
+            <p>⏱️ 5 minutes to complete</p>
+            <p>🎯 Choose the correct modal verb to complete each sentence</p>
+            
+            <div class="form-group">
+                <label for="studentName">Your Name:</label>
+                <input type="text" id="studentName" placeholder="Enter your name" required>
+            </div>
+            
+            <button class="start-button" onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div class="quiz-content" id="quizContent">
+            <div class="timer" id="timer">Time: 5:00</div>
+            
+            <div class="progress-container">
+                <div class="progress-bar-correct" id="progressBarCorrect"></div>
+                <div class="progress-bar-incorrect" id="progressBarIncorrect"></div>
+                <div class="progress-text" id="progressText">0/10</div>
+            </div>
+
+            <div class="question-container" id="questionContainer">
+                <div class="question-number" id="questionNumber">Question 1</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <div class="nav-buttons">
+                <button id="prevBtn" onclick="previousQuestion()" disabled>Previous</button>
+                <button id="nextBtn" onclick="nextQuestion()">Next</button>
+                <button id="submitBtn" onclick="submitQuiz()" style="display: none;">Submit Quiz</button>
+            </div>
+        </div>
+
+        <div class="results" id="results">
+            <h2>Quiz Completed!</h2>
+            <div class="score" id="finalScore"></div>
+            <p id="resultMessage"></p>
+            <button onclick="location.reload()">Take Quiz Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questionBank = [
+            {q: "We ___ have a barbecue this weekend if it rains.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "___ your parents let you go to the party if you finish your homework early?", options: ["Will", "Won't", "Might", "Might not"], correct: "Will"},
+            {q: "If you keep practicing, you ___ definitely become a great musician.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "I ___ finish reading this book by tomorrow because I have to return it.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "She ___ come to the meeting if she feels better.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "They ___ arrive on time because of the traffic jam.", options: ["will", "won't", "might", "might not"], correct: "might not"},
+            {q: "If the weather is nice, we ___ go to the beach.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "He ___ pass the exam if he doesn't study harder.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "I ___ call you later when I have more information.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "The store ___ be closed on Sundays.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "If you eat too much candy, you ___ get a stomachache.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "We ___ need an umbrella if it stops raining.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "She ___ be happy to hear the good news.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "They ___ join us for dinner if they're not too busy.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "The train ___ leave without us if we don't hurry.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "I ___ forget to bring my laptop to work tomorrow.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "If you don't wear a coat, you ___ catch a cold.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "He ___ believe you if you don't show him proof.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "The package ___ arrive tomorrow or the day after.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "We ___ have enough time to finish the project by Friday.", options: ["will", "won't", "might", "might not"], correct: "might not"},
+            {q: "If she studies hard, she ___ definitely get an A.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "They ___ cancel the concert due to bad weather.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "I ___ remember to send you the documents.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "The movie ___ be sold out by the time we get there.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "If you don't leave now, you ___ miss your flight.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "She ___ recognize you with your new haircut.", options: ["will", "won't", "might", "might not"], correct: "might not"},
+            {q: "We ___ go camping this weekend if the forecast improves.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "He ___ be late because he always leaves early.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "If you water the plants regularly, they ___ grow well.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "The restaurant ___ have tables available without a reservation.", options: ["will", "won't", "might", "might not"], correct: "might not"},
+            {q: "I ___ help you with your homework after dinner.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "They ___ agree with your proposal.", options: ["will", "won't", "might", "might not"], correct: "might not"},
+            {q: "If it snows heavily, school ___ be cancelled.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "She ___ answer her phone if she's in a meeting.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "We ___ definitely visit you when we're in town.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "The battery ___ last much longer if you keep using it.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "If you ask nicely, he ___ lend you his car.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "I ___ go to the gym today because I'm too tired.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "The company ___ hire more employees next year.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "If you practice every day, you ___ improve quickly.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "She ___ come to the party if she has other plans.", options: ["will", "won't", "might", "might not"], correct: "might not"},
+            {q: "We ___ need to buy more food for the party.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "He ___ finish the report on time if he works all night.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "If you don't charge your phone, it ___ die soon.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "They ___ accept late submissions for this assignment.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "The bus ___ be delayed because of construction.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "I ___ make dinner tonight since I have all the ingredients.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "She ___ change her mind once she hears all the details.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "If you drive too fast, you ___ get a ticket.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "We ___ have class tomorrow because it's a holiday.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "The flowers ___ bloom in spring if we plant them now.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "He ___ remember to bring the keys.", options: ["will", "won't", "might", "might not"], correct: "might not"},
+            {q: "If you save money every month, you ___ afford a vacation.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "They ___ close the store early on weekends.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "I ___ tell anyone your secret, I promise.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "She ___ get the promotion if she continues working hard.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "If the tickets are cheap, we ___ go to the concert.", options: ["will", "won't", "might", "might not"], correct: "might"},
+            {q: "He ___ be surprised when he sees what we've planned.", options: ["will", "won't", "might", "might not"], correct: "will"},
+            {q: "The meeting ___ start on time if everyone arrives late.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+            {q: "If you don't set an alarm, you ___ oversleep.", options: ["will", "won't", "might", "might not"], correct: "might"}
+        ];
+
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let answers = [];
+        let correctAnswers = 0;
+        let timerInterval;
+        let timeLeft = 300; // 5 minutes in seconds
+        let studentName = "";
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function startQuiz() {
+            const nameInput = document.getElementById('studentName');
+            
+            studentName = nameInput.value.trim();
+            
+            if (!studentName) {
+                alert('Please enter your name before starting the quiz.');
+                return;
+            }
+
+            currentQuestions = shuffleArray(questionBank).slice(0, 10);
+            answers = new Array(10).fill(null);
+            
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizContent').style.display = 'block';
+            
+            displayQuestion();
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer').textContent = 
+                    `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function displayQuestion() {
+            const question = currentQuestions[currentQuestionIndex];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1}`;
+            document.getElementById('questionText').textContent = question.q;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach(option => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = option;
+                if (answers[currentQuestionIndex] === option) {
+                    div.classList.add('selected');
+                }
+                div.onclick = () => selectOption(option);
+                optionsContainer.appendChild(div);
+            });
+            
+            updateNavigationButtons();
+            updateProgressBar();
+        }
+
+        function selectOption(option) {
+            answers[currentQuestionIndex] = option;
+            displayQuestion();
+        }
+
+        function updateProgressBar() {
+            const answered = answers.filter(a => a !== null).length;
+            
+            // Count correct and incorrect answers so far
+            let correct = 0;
+            let incorrect = 0;
+            
+            for (let i = 0; i < answers.length; i++) {
+                if (answers[i] !== null) {
+                    if (answers[i] === currentQuestions[i].correct) {
+                        correct++;
+                    } else {
+                        incorrect++;
+                    }
+                }
+            }
+            
+            const correctPercentage = (correct / 10) * 100;
+            const incorrectPercentage = (incorrect / 10) * 100;
+            
+            document.getElementById('progressBarCorrect').style.width = correctPercentage + '%';
+            document.getElementById('progressBarIncorrect').style.width = incorrectPercentage + '%';
+            document.getElementById('progressText').textContent = `${answered}/10 (✓${correct} ✗${incorrect})`;
+        }
+
+        function updateNavigationButtons() {
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === 9) {
+                document.getElementById('nextBtn').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'block';
+            } else {
+                document.getElementById('nextBtn').style.display = 'block';
+                document.getElementById('submitBtn').style.display = 'none';
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < 9) {
+                currentQuestionIndex++;
+                displayQuestion();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            
+            correctAnswers = 0;
+            for (let i = 0; i < currentQuestions.length; i++) {
+                if (answers[i] === currentQuestions[i].correct) {
+                    correctAnswers++;
+                }
+            }
+            
+            const score = (correctAnswers / 10) * 100;
+            const timeTaken = 300 - timeLeft;
+            const minutes = Math.floor(timeTaken / 60);
+            const seconds = timeTaken % 60;
+            
+            sendToGoogleSheets(score, `${minutes}:${seconds.toString().padStart(2, '0')}`);
+            
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            
+            const scoreElement = document.getElementById('finalScore');
+            scoreElement.textContent = `${correctAnswers}/10 (${score}%)`;
+            
+            if (score >= 70) {
+                scoreElement.className = 'score';
+                document.getElementById('resultMessage').textContent = 'Great job! You passed! 🎉';
+            } else {
+                scoreElement.className = 'score fail';
+                document.getElementById('resultMessage').textContent = 'Keep practicing! You can do better! 💪';
+            }
+        }
+
+        function sendToGoogleSheets(score, timeTaken) {
+            const formData = new FormData();
+            formData.append('name', studentName);
+            formData.append('score', score);
+            formData.append('correctAnswers', correctAnswers);
+            formData.append('timeTaken', timeTaken);
+            formData.append('date', new Date().toLocaleString());
+            
+            // Google Apps Script Web App URL
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzvhd9K2CVC9_EPkhAEYFDp8K1CBpGUWNrEAEVC4w4Q8eHh5uDFO_aaKPMcH-Tajv5U/exec';
+            
+            fetch(scriptURL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => console.log('Success!', response))
+            .catch(error => console.error('Error!', error.message));
+        }
+    </script>
+</body>
+</html>
