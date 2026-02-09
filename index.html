@@ -9,6 +9,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Beautiful Background Photo */
             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
                         url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
@@ -78,7 +79,7 @@
         <h1>Grammar: Future Modals</h1>
         
         <div class="start-screen" id="startScreen">
-            <p>Will/Won't (100% Certain) vs Might/Might Not (Possible)</p>
+            <p>Will/Won't (Certainty) vs Might/Might Not (Possibility)</p>
             <div class="form-group">
                 <label>Student Name:</label>
                 <input type="text" id="studentName" placeholder="Enter your name..." required>
@@ -100,65 +101,47 @@
             <div class="nav-buttons">
                 <button id="prevBtn" onclick="previousQuestion()" disabled>Previous</button>
                 <button id="nextBtn" onclick="nextQuestion()">Next</button>
-                <button id="submitBtn" onclick="submitQuiz()" style="display: none;">Submit</button>
+                <button id="submitBtn" onclick="submitQuiz()" style="display: none;">Submit Quiz</button>
             </div>
         </div>
 
         <div class="results" id="results">
-            <h2>Done!</h2>
+            <h2>Quiz Results</h2>
             <div class="score" id="finalScore"></div>
             <p id="resultMessage"></p>
-            <button onclick="location.reload()">Restart</button>
+            <p style="margin-top:10px; color:#666;">Saving your score to the teacher's sheet...</p>
+            <button onclick="location.reload()" style="margin-top:20px;">Restart Quiz</button>
         </div>
     </div>
 
 <script>
 const fullBank = [
-    // Will / Won't (Certainty)
+    // Will / Won't (Certainty keywords: definitely, 100%, sure, promise)
     {q: "I've already bought the tickets. We ___ definitely see the show tonight.", options: ["will", "won't", "might", "might not"], correct: "will"},
     {q: "The sun always rises in the East. It ___ rise there tomorrow morning.", options: ["will", "won't", "might", "might not"], correct: "will"},
     {q: "I promise I ___ tell anyone your secret. You can trust me 100%.", options: ["will", "won't", "might", "might not"], correct: "won't"},
     {q: "He is a vegetarian. He ___ eat the beef burger you ordered.", options: ["will", "won't", "might", "might not"], correct: "won't"},
     {q: "If you don't study at all, I'm sure you ___ pass this difficult exam.", options: ["will", "won't", "might", "might not"], correct: "won't"},
-    {q: "The shop is closed for holidays. It ___ open until next Monday.", options: ["will", "won't", "might", "might not"], correct: "won't"},
-    {q: "I've decided! I ___ study engineering at university next year.", options: ["will", "won't", "might", "might not"], correct: "will"},
+    {q: "I've decided! I ___ study engineering at university next year. I'm certain.", options: ["will", "won't", "might", "might not"], correct: "will"},
     {q: "The battery is at 0%. The phone ___ turn off in a few seconds.", options: ["will", "won't", "might", "might not"], correct: "will"},
     {q: "Stop! If you touch that hot plate, you ___ definitely burn your hand.", options: ["will", "won't", "might", "might not"], correct: "will"},
-    {q: "I'm certain she ___ love this gift. It's exactly what she wanted.", options: ["will", "won't", "might", "might not"], correct: "will"},
     {q: "He hates loud music. He ___ come to the rock concert with us.", options: ["will", "won't", "might", "might not"], correct: "won't"},
-    {q: "It's already 9:00 PM. The bank ___ definitely be closed now.", options: ["will", "won't", "might", "might not"], correct: "will"},
-    {q: "I've set my alarm for 6 AM. I ___ be late for the meeting.", options: ["will", "won't", "might", "might not"], correct: "won't"},
-    {q: "The team is 5 goals ahead. They ___ definitely win the game.", options: ["will", "won't", "might", "might not"], correct: "will"},
-    {q: "I have no money left. I ___ buy those expensive shoes today.", options: ["will", "won't", "might", "might not"], correct: "won't"},
+    {q: "The bank is closed. They ___ open until tomorrow morning.", options: ["will", "won't", "might", "might not"], correct: "won't"},
     
-    // Might / Might Not (Possibility)
+    // Might / Might Not (Possibility keywords: haven't decided, maybe, perhaps, not sure)
     {q: "I haven't decided yet. I ___ go to Japan for my holiday.", options: ["will", "won't", "might", "might not"], correct: "might"},
     {q: "The sky is a bit grey. It ___ rain later, but I'm not sure.", options: ["will", "won't", "might", "might not"], correct: "might"},
     {q: "She's feeling a little tired, so she ___ come to the gym tonight.", options: ["will", "won't", "might", "might not"], correct: "might not"},
-    {q: "It's a difficult question. The teacher ___ know the answer, but let's ask.", options: ["will", "won't", "might", "might not"], correct: "might"},
     {q: "Perhaps we'll see them at the park. They ___ be there playing football.", options: ["will", "won't", "might", "might not"], correct: "might"},
     {q: "I'm not sure if I'm hungry. I ___ eat a big dinner tonight.", options: ["will", "won't", "might", "might not"], correct: "might not"},
-    {q: "There's a lot of traffic. We ___ arrive on time for the movie.", options: ["will", "won't", "might", "might not"], correct: "might not"},
-    {q: "I might buy a new car, or I ___ just repair my old one. I haven't decided.", options: ["will", "won't", "might", "might not"], correct: "might"},
-    {q: "He's busy today. He ___ have time to call you back later.", options: ["will", "won't", "might", "might not"], correct: "might not"},
+    {q: "I haven't decided. I ___ buy a new car, or I might just repair my old one.", options: ["will", "won't", "might", "might not"], correct: "might"},
+    {q: "There's a lot of traffic. We ___ arrive on time for the movie, we aren't sure.", options: ["will", "won't", "might", "might not"], correct: "might not"},
     {q: "Check the fridge. There ___ be some milk left, but I think we drank it all.", options: ["will", "won't", "might", "might not"], correct: "might"},
-    {q: "Maybe they're at home. Their car is in the drive, but the lights are off. They ___ be in.", options: ["will", "won't", "might", "might not"], correct: "might not"},
-    {q: "I don't know the way. I ___ get lost if I don't use GPS.", options: ["will", "won't", "might", "might not"], correct: "might"},
-    {q: "It's possible she is sleeping. She ___ answer her phone.", options: ["will", "won't", "might", "might not"], correct: "might not"},
-    {q: "We ___ visit our grandparents this weekend if we finish our work.", options: ["will", "won't", "might", "might not"], correct: "might"},
-    {q: "The test was quite hard. I ___ get an A, but I hope so.", options: ["will", "won't", "might", "might not"], correct: "might not"},
-
-    // Keyword focus (Probably/Definitely/Maybe)
-    {q: "They are definitely the best team. They ___ win the trophy.", options: ["will", "won't", "might", "might not"], correct: "will"},
-    {q: "Maybe I'll go out, or maybe I ___ stay here. I haven't decided.", options: ["will", "won't", "might", "might not"], correct: "might"},
-    {q: "I'm probably going to be late. The bus ___ arrive for another 20 minutes.", options: ["will", "won't", "might", "might not"], correct: "might not"},
-    {q: "It's 100% certain. The price of bread ___ go up next week.", options: ["will", "won't", "might", "might not"], correct: "will"},
-    {q: "Perhaps she's busy. She ___ reply to your text immediately.", options: ["will", "won't", "might", "might not"], correct: "might not"},
-    {q: "I'm sure he ___ forget. He has a great memory.", options: ["will", "won't", "might", "might not"], correct: "won't"},
-    {q: "We are definitely not going. We ___ be at the party.", options: ["will", "won't", "might", "might not"], correct: "won't"},
-    {q: "It's possible! Life ___ be found on other planets one day.", options: ["will", "won't", "might", "might not"], correct: "might"},
-    {q: "I'm not sure about the color. I ___ choose the blue one.", options: ["will", "won't", "might", "might not"], correct: "might"},
-    {q: "The weather forecast says there is a small chance. It ___ snow.", options: ["will", "won't", "might", "might not"], correct: "might"}
+    {q: "It's possible she is sleeping. She ___ answer her phone if we call.", options: ["will", "won't", "might", "might not"], correct: "might not"},
+    {q: "The test was hard. I ___ get an A, but I hope so.", options: ["will", "won't", "might", "might not"], correct: "might not"},
+    {q: "Maybe they're at home. Their car is in the drive, but I ___ be right.", options: ["will", "won't", "might", "might not"], correct: "might"},
+    {q: "We ___ visit our grandparents if the weather is nice, but we haven't decided.", options: ["will", "won't", "might", "might not"], correct: "might"},
+    {q: "I'm not sure about the color. I ___ choose the blue one.", options: ["will", "won't", "might", "might not"], correct: "might"}
 ];
 
 let currentQuestions = [];
@@ -166,12 +149,13 @@ let currentQuestionIndex = 0;
 let answers = [];
 let timeLeft = 300;
 let timerInterval;
+let studentName = "";
 
 function startQuiz() {
-    const name = document.getElementById('studentName').value.trim();
-    if(!name) return alert("Please enter your name");
+    studentName = document.getElementById('studentName').value.trim();
+    if(!studentName) return alert("Please enter your name");
     
-    // Randomize and pick 10
+    // Pick 10 random questions
     currentQuestions = fullBank.sort(() => 0.5 - Math.random()).slice(0, 10);
     answers = new Array(10).fill(null);
     
@@ -193,9 +177,10 @@ function startTimer() {
 
 function displayQuestion() {
     const q = currentQuestions[currentQuestionIndex];
-    document.getElementById('questionText').innerHTML = `<strong>Q${currentQuestionIndex+1}:</strong> ${q.q}`;
+    document.getElementById('questionText').innerHTML = `<strong>Question ${currentQuestionIndex+1}:</strong><br>${q.q}`;
     const container = document.getElementById('optionsContainer');
     container.innerHTML = '';
+    
     q.options.forEach(opt => {
         const btn = document.createElement('div');
         btn.className = 'option' + (answers[currentQuestionIndex] === opt ? ' selected' : '');
@@ -208,6 +193,7 @@ function displayQuestion() {
         };
         container.appendChild(btn);
     });
+    
     document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
     document.getElementById('nextBtn').style.display = currentQuestionIndex === 9 ? 'none' : 'block';
     document.getElementById('submitBtn').style.display = currentQuestionIndex === 9 ? 'block' : 'none';
@@ -215,31 +201,60 @@ function displayQuestion() {
 }
 
 function updateProgress() {
-    let c = 0, inc = 0, ansCount = 0;
+    let correct = 0, incorrect = 0, answered = 0;
     answers.forEach((a, i) => {
         if(a) {
-            ansCount++;
-            if(a === currentQuestions[i].correct) c++; else inc++;
+            answered++;
+            if(a === currentQuestions[i].correct) correct++; else incorrect++;
         }
     });
-    document.getElementById('progressBarCorrect').style.width = (c*10)+'%';
-    document.getElementById('progressBarIncorrect').style.width = (inc*10)+'%';
-    document.getElementById('progressText').textContent = `${ansCount}/10 (Correct: ${c})`;
+    document.getElementById('progressBarCorrect').style.width = (correct * 10) + '%';
+    document.getElementById('progressBarIncorrect').style.width = (incorrect * 10) + '%';
+    document.getElementById('progressText').textContent = `${answered}/10 Answers`;
 }
 
-function nextQuestion() { currentQuestionIndex++; displayQuestion(); }
-function previousQuestion() { currentQuestionIndex--; displayQuestion(); }
+function nextQuestion() { if(currentQuestionIndex < 9) { currentQuestionIndex++; displayQuestion(); } }
+function previousQuestion() { if(currentQuestionIndex > 0) { currentQuestionIndex--; displayQuestion(); } }
 
 function submitQuiz() {
     clearInterval(timerInterval);
     let score = 0;
     answers.forEach((a, i) => { if(a === currentQuestions[i].correct) score++; });
+    
+    const timeTakenSeconds = 300 - timeLeft;
+    const minutes = Math.floor(timeTakenSeconds / 60);
+    const seconds = timeTakenSeconds % 60;
+    const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+    // UI Feedback
     document.getElementById('quizContent').style.display = 'none';
     document.getElementById('results').style.display = 'block';
     const scoreEl = document.getElementById('finalScore');
-    scoreEl.textContent = `${score}/10 (${score*10}%)`;
+    scoreEl.textContent = `${score}/10 (${score * 10}%)`;
     scoreEl.className = score >= 7 ? 'score' : 'score fail';
-    document.getElementById('resultMessage').textContent = score >= 7 ? "Excellent work! 🌟" : "Keep practicing! 📚";
+    document.getElementById('resultMessage').textContent = score >= 7 ? "Great job, " + studentName + "! 🌟" : "Keep practicing, " + studentName + "! 📚";
+
+    // SHEET CONNECTION
+    sendToGoogleSheets(score * 10, score, formattedTime);
+}
+
+function sendToGoogleSheets(percent, correctCount, time) {
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbw-xgofjZSPhtE1cPN0AsPhN9-V8aLWmzMyjEQmqWIcKSLBmJGLAlCFueZ6ueQkyZc/exec';
+    
+    const formData = new FormData();
+    formData.append('name', studentName);
+    formData.append('score', percent + "%");
+    formData.append('correctAnswers', correctCount);
+    formData.append('timeTaken', time);
+    formData.append('date', new Date().toLocaleString());
+
+    fetch(scriptURL, { 
+        method: 'POST', 
+        body: formData,
+        mode: 'no-cors' 
+    })
+    .then(() => console.log('Data successfully sent to Sheets!'))
+    .catch(error => console.error('Error sending data:', error.message));
 }
 </script>
 </body>
