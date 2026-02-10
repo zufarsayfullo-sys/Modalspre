@@ -9,7 +9,6 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Beautiful Background Photo */
             background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
                         url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
@@ -56,7 +55,7 @@
         .option:hover { background: #e9ecef; border-color: #667eea; transform: translateX(5px); }
         .option.selected { background: #667eea; color: white; border-color: #667eea; }
 
-        .nav-buttons { display: flex; justify-content: space-between; margin-top: 30px; }
+        .nav-buttons { display: flex; justify-content: flex-end; margin-top: 30px; }
         button { background: #667eea; color: white; border: none; padding: 12px 30px; border-radius: 8px; font-size: 1em; cursor: pointer; transition: all 0.3s ease; font-weight: bold; }
         button:hover { background: #5568d3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
         button:disabled { background: #95a5a6; cursor: not-allowed; transform: none; }
@@ -99,7 +98,6 @@
                 <div class="options" id="optionsContainer"></div>
             </div>
             <div class="nav-buttons">
-                <button id="prevBtn" onclick="previousQuestion()" disabled>Previous</button>
                 <button id="nextBtn" onclick="nextQuestion()">Next</button>
                 <button id="submitBtn" onclick="submitQuiz()" style="display: none;">Submit Quiz</button>
             </div>
@@ -116,7 +114,6 @@
 
 <script>
 const fullBank = [
-    // Will / Won't (Certainty keywords: definitely, 100%, sure, promise)
     {q: "I've already bought the tickets. We ___ definitely see the show tonight.", options: ["will", "won't", "might", "might not"], correct: "will"},
     {q: "The sun always rises in the East. It ___ rise there tomorrow morning.", options: ["will", "won't", "might", "might not"], correct: "will"},
     {q: "I promise I ___ tell anyone your secret. You can trust me 100%.", options: ["will", "won't", "might", "might not"], correct: "won't"},
@@ -127,8 +124,6 @@ const fullBank = [
     {q: "Stop! If you touch that hot plate, you ___ definitely burn your hand.", options: ["will", "won't", "might", "might not"], correct: "will"},
     {q: "He hates loud music. He ___ come to the rock concert with us.", options: ["will", "won't", "might", "might not"], correct: "won't"},
     {q: "The bank is closed. They ___ open until tomorrow morning.", options: ["will", "won't", "might", "might not"], correct: "won't"},
-    
-    // Might / Might Not (Possibility keywords: haven't decided, maybe, perhaps, not sure)
     {q: "I haven't decided yet. I ___ go to Japan for my holiday.", options: ["will", "won't", "might", "might not"], correct: "might"},
     {q: "The sky is a bit grey. It ___ rain later, but I'm not sure.", options: ["will", "won't", "might", "might not"], correct: "might"},
     {q: "She's feeling a little tired, so she ___ come to the gym tonight.", options: ["will", "won't", "might", "might not"], correct: "might not"},
@@ -155,7 +150,6 @@ function startQuiz() {
     studentName = document.getElementById('studentName').value.trim();
     if(!studentName) return alert("Please enter your name");
     
-    // Pick 10 random questions
     currentQuestions = fullBank.sort(() => 0.5 - Math.random()).slice(0, 10);
     answers = new Array(10).fill(null);
     
@@ -194,7 +188,7 @@ function displayQuestion() {
         container.appendChild(btn);
     });
     
-    document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+    // UI Logic for Next/Submit
     document.getElementById('nextBtn').style.display = currentQuestionIndex === 9 ? 'none' : 'block';
     document.getElementById('submitBtn').style.display = currentQuestionIndex === 9 ? 'block' : 'none';
     updateProgress();
@@ -214,7 +208,6 @@ function updateProgress() {
 }
 
 function nextQuestion() { if(currentQuestionIndex < 9) { currentQuestionIndex++; displayQuestion(); } }
-function previousQuestion() { if(currentQuestionIndex > 0) { currentQuestionIndex--; displayQuestion(); } }
 
 function submitQuiz() {
     clearInterval(timerInterval);
@@ -226,7 +219,6 @@ function submitQuiz() {
     const seconds = timeTakenSeconds % 60;
     const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
-    // UI Feedback
     document.getElementById('quizContent').style.display = 'none';
     document.getElementById('results').style.display = 'block';
     const scoreEl = document.getElementById('finalScore');
@@ -234,7 +226,6 @@ function submitQuiz() {
     scoreEl.className = score >= 7 ? 'score' : 'score fail';
     document.getElementById('resultMessage').textContent = score >= 7 ? "Great job, " + studentName + "! 🌟" : "Keep practicing, " + studentName + "! 📚";
 
-    // SHEET CONNECTION
     sendToGoogleSheets(score * 10, score, formattedTime);
 }
 
